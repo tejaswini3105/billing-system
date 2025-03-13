@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Billing System</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 50%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-size: 16px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-group button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+        #receipt {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .receipt-header, .receipt-footer {
+            text-align: center;
+        }
+        .receipt-content {
+            margin: 10px 0;
+        }
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Cafe Billing System</h1>
+
+        <form id="billing-form">
+            <div class="form-group">
+                <label for="item">Item:</label>
+                <select id="item" required>
+                    <option value="Coffee">Coffee - ₹ 90</option>
+                    <option value="Tea">Tea - ₹ 70</option>
+                    <option value="Sandwich">Sandwich - ₹ 85</option>
+                    <option value="Cake">Cake - ₹ 220</option>
+                    <option value="Juice">Juice - ₹ 80</option>
+                    <option value="Pizza">Pizza - ₹ 140</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <input type="number" id="quantity" value="1" min="1" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Add Item</button>
+            </div>
+        </form>
+
+        <div id="receipt">
+            <div class="receipt-header">
+                <h2>Receipt</h2>
+                <p>Thank you for visiting our Cafe!</p>
+            </div>
+
+            <div id="receipt-items" class="receipt-content"></div>
+
+            <div class="receipt-footer">
+                <p class="total">Total: ₹<span id="total-price">0.00</span></p>
+                <button onclick="printReceipt()">Print Receipt</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let totalAmount = 0;
+        const billingForm = document.getElementById('billing-form');
+        const receiptDiv = document.getElementById('receipt');
+        const receiptItemsDiv = document.getElementById('receipt-items');
+        const totalPriceSpan = document.getElementById('total-price');
+
+        const prices = {
+            Coffee: 90,
+            Tea: 70,
+            Sandwich: 85,
+            Cake: 220,
+            Juice: 80,
+            Pizza: 140
+        };
+
+        billingForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Get form input values
+            const item = document.getElementById('item').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const price = prices[item];
+
+            // Calculate item total
+            const itemTotal = price * quantity;
+            totalAmount += itemTotal;
+
+            // Create receipt item
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('receipt-item');
+            itemDiv.innerHTML = `${item} x ${quantity} = ₹${itemTotal.toFixed(2)}`;
+            receiptItemsDiv.appendChild(itemDiv);
+
+            // Update total
+            totalPriceSpan.textContent = totalAmount.toFixed(2);
+
+            // Show receipt section
+            receiptDiv.style.display = 'block';
+
+            // Reset form
+            billingForm.reset();
+        });
+
+        function printReceipt() {
+            const printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write('<html><head><title>Receipt</title></head><body>');
+            printWindow.document.write('<h2 style="text-align: center;">Cafe Receipt</h2>');
+            printWindow.document.write('<div style="text-align: center;">Thank you for your visit!</div>');
+            printWindow.document.write('<div><hr></div>');
+            printWindow.document.write('<div><h3>Items:</h3></div>');
+            printWindow.document.write('<div>' + receiptItemsDiv.innerHTML + '</div>');
+            printWindow.document.write('<div><hr></div>');
+            printWindow.document.write('<div><h3>Total: ₹' + totalAmount.toFixed(2) + '</h3></div>');
+            printWindow.document.write('<div><button onclick="window.print()">Print</button></div>');
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+        }
+    </script>
+
+</body>
+</html>
